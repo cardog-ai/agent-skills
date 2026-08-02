@@ -1,0 +1,10 @@
+{
+  "name": "cardog",
+  "version": "1.0.0",
+  "description": "Canadian vehicle data: VIN identity, canonical specs, live market pricing, and Transport Canada + NHTSA recalls behind one typed ref graph.",
+  "author": { "name": "Cardog Inc.", "url": "https://cardog.app" },
+  "homepage": "https://cardog.app/docs",
+  "repository": "https://github.com/cardog-ai/agent-skills",
+  "license": "Apache-2.0",
+  "keywords": ["vin", "vehicles", "recalls", "automotive", "canada", "market-data"]
+}

@@ -1,0 +1,44 @@
+name: drift-gate
+
+# The repo copy of SKILL.md must byte-match the digest-verified artifact
+# served at cardog.app/skill.md. PRs and pushes fail on drift; the daily
+# schedule opens a sync PR when the app ships a new skill.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify repo copy matches the live, digest-verified artifact
+        run: bash scripts/sync.sh --check
+
+  sync:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull the live artifact (digest-verified)
+        run: bash scripts/sync.sh
+      - name: Open a PR if the skill changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: sync/skill-md
+          title: "sync: skill.md changed on cardog.app"
+          commit-message: "sync: mirror skill.md from cardog.app"
+          body: >
+            Automated daily sync. The digest-verified artifact at
+            https://cardog.app/skill.md no longer matches the repo copy.
+            Review the diff and merge to restore one-truth.
